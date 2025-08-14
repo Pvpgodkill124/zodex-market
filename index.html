@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zodex Market</title>
+<style>
+  :root{--bg:#000;--panel:#0f0f0f;--accent:#7d2cff;--text:#fff;--muted:#aaa}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Inter,Arial}
+  header{background:var(--accent);padding:14px;text-align:center;font-weight:700}
+  .wrap{max-width:1100px;margin:20px auto;padding:0 16px}
+  .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  input{background:#0a0a0a;border:1px solid #2a2a2a;color:#fff;padding:10px;border-radius:10px;flex:1}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:16px}
+  .card{background:var(--panel);border:1px solid #222;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+  .title{font-weight:700}
+  .muted{color:var(--muted);font-size:14px}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+  button{background:#1c1c1c;border:1px solid #2a2a2a;color:#fff;padding:8px 12px;border-radius:10px;cursor:pointer}
+  .accent{background:var(--accent);border:0}
+  dialog{border:1px solid #333;background:#0a0a0a;color:#fff;border-radius:12px;padding:16px;max-width:520px}
+  dialog::backdrop{background:rgba(0,0,0,.6)}
+</style>
+</head>
+<body>
+<header>Zodex Market</header>
+<div class="wrap">
+  <div class="bar">
+    <input id="q" placeholder="Search Zodex apps... (notes, music, gps, files, vpn, recorder, clock, calendar, album, calculator)">
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<dialog id="dlg">
+  <h3 id="dlgTitle">Install App</h3>
+  <p class="muted">This is a web app. To “install”, open it and then use your browser’s <b>Add to Home Screen</b> option to pin it like a native app.</p>
+  <div class="row">
+    <button id="dlgOpen" class="accent">Open App</button>
+    <button onclick="dlg.close()">Close</button>
+  </div>
+</dialog>
+
+<script>
+  const apps=[
+    {id:'notes', name:'Zodex Notes', desc:'Fast notes with voice & pins.', path:'../zodex-notes/'},
+    {id:'music', name:'Zodex Music', desc:'Offline-friendly audio player.', path:'../zodex-music/'},
+    {id:'gps', name:'Zodex GPS', desc:'Maps + location (device).', path:'../zodex-gps/'},
+    {id:'files', name:'Zodex Files', desc:'Pick & view files (sandboxed).', path:'../zodex-files/'},
+    {id:'vpn', name:'Zodex VPN', desc:'Dummy toggle, IP info.', path:'../zodex-vpn/'},
+    {id:'recorder', name:'Zodex Recorder', desc:'Mic & screen recorder.', path:'../zodex-recorder/'},
+    {id:'clock', name:'Zodex Clock', desc:'Alarm, Timer, Stopwatch.', path:'../zodex-clock/'},
+    {id:'calendar', name:'Zi Calendar', desc:'Monthly view + tasks.', path:'../zi-calendar/'},
+    {id:'album', name:'Zi Album', desc:'Photo gallery with tags.', path:'../zi-album/'},
+    {id:'calculator', name:'ZX Calculator', desc:'Calc + history + convert.', path:'../zx-calculator/'}
+  ];
+  const grid=document.getElementById('grid'), q=document.getElementById('q'), dlg=document.getElementById('dlg'), dlgOpen=document.getElementById('dlgOpen'), dlgTitle=document.getElementById('dlgTitle');
+  let chosen=null;
+
+  function render(){
+    const term=(q.value||'').toLowerCase();
+    grid.innerHTML='';
+    apps.filter(a=>!term || a.name.toLowerCase().includes(term) || a.id.includes(term)).forEach(a=>{
+      const card=document.createElement('div'); card.className='card';
+      const title=document.createElement('div'); title.className='title'; title.textContent=a.name;
+      const d=document.createElement('div'); d.className='muted'; d.textContent=a.desc;
+      const row=document.createElement('div'); row.className='row';
+      const open=document.createElement('button'); open.textContent='Open'; open.className='accent'; open.onclick=()=>{location.href=a.path};
+      const install=document.createElement('button'); install.textContent='Install'; install.onclick=()=>{chosen=a; dlgTitle.textContent=`Install ${a.name}`; dlg.showModal();};
+      row.append(open,install);
+      card.append(title,d,row); grid.appendChild(card);
+    });
+  }
+  q.oninput=render; render();
+  dlgOpen.onclick=()=>{if(chosen) location.href=chosen.path};
+</script>
+</body></html>
